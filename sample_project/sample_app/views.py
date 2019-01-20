@@ -38,6 +38,11 @@ def index(request):
     })
 
 
+def book_detail(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    return render(request, 'book.html', {'book': book})
+
+
 @login_required
 @user_passes_test(is_staff)
 def create_book(request):

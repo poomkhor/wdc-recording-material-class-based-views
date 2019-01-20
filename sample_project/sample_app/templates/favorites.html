@@ -19,7 +19,7 @@
               <tr>
                 <td class="align-middle">{{ book.id }}</td>
                 <td class="align-middle">{{ book.title}}</td>
-                <td class="align-middle"><a href="{% url 'author_by_id' book.author.id %}">{{ book.author.name}}</a></td>
+                <td class="align-middle"><a href="{% url 'author_detail' book.author.id %}">{{ book.author.name}}</a></td>
                 <td class="align-middle">{{ book.popularity}}</td>
               </tr>
             {% endfor %}
