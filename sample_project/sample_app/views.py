@@ -16,49 +16,56 @@ from .forms import BookForm, SignUpForm
 def is_staff(user):
     return user.is_staff
 
-class IndexView(View):
-    def get(self, request):
-        sort_method = request.GET.get('sort', 'asc')
+class IndexView(TemplateView):
+    template_name = "books.html"
+
+    def get_context_data(self, **kwargs):
+        # Request data is now in `self.request`
+        sort_method = self.request.GET.get('sort', 'asc')
         books = Book.objects.all()
         if sort_method == 'asc':
             books = books.order_by('popularity')
         elif sort_method == 'desc':
             books = books.order_by('-popularity')
 
-        if 'q' in request.GET:
-            q = request.GET['q']
+        if 'q' in self.request.GET:
+            q = self.request.GET['q']
             books = books.filter(title__icontains=q)
 
         # initialize list of favorite books for current session
-        request.session.setdefault('favorite_books', [])
-        request.session.save()
+        self.request.session.setdefault('favorite_books', [])
+        self.request.session.save()
 
-        return render(request, 'books.html', {
+        return {
             'books': books,
             'authors': Author.objects.all(),
             'sort_method': sort_method,
-        })
+        }
 
-class BookDetailView(View):
-    def get(self, request, book_id):
-        book = get_object_or_404(Book, id=book_id)
-        return render(request, 'book.html', {'book': book})
+class BookDetailView(TemplateView):
+    template_name = "book.html"
+    def get_context_data(self, **kwargs):
+        book = get_object_or_404(Book, id=kwargs['book_id'])
+        return {'book': book}
 
 
-class AuthorListView(View):
-    def get(self, request):
+class AuthorListView(TemplateView):
+    template_name = "authors.html"
+    def get_context_data(self, **kwargs):
         authors = Author.objects.all()
-        return render(request, 'authors.html', {
+        return {
             'authors': authors
-        })
+        }
 
 
-class AuthorDetailView(View):
-    def get(self, request, author_id):
-        author = get_object_or_404(Author, id=author_id)
-        return render(request, 'author.html', {
+class AuthorDetailView(TemplateView):
+    template_name = "author.html"
+    def get_context_data(self, **kwargs):
+        author = get_object_or_404(Author, id=kwargs['author_id'])
+        return {
             'author': author
-        })
+        }
+
 
 class AuthorByName(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
