@@ -43,6 +43,20 @@ def book_detail(request, book_id):
     return render(request, 'book.html', {'book': book})
 
 
+def authors(request):
+    authors = Author.objects.all()
+    return render(request, 'authors.html', {
+        'authors': authors
+    })
+
+
+def author_detail(request, author_id):
+    author = get_object_or_404(Author, id=author_id)
+    return render(request, 'author.html', {
+        'author': author
+    })
+
+
 @login_required
 @user_passes_test(is_staff)
 def create_book(request):
@@ -101,24 +115,6 @@ def delete_book(request):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
     return redirect('/')
-
-
-def authors(request):
-    authors = Author.objects.all()
-    return render(request, 'authors.html', {
-        'authors': authors
-    })
-
-
-def author(request, author_id):
-    try:
-        author = Author.objects.get(id=author_id)
-    except Author.DoesNotExist:
-        return HttpResponseNotFound()
-
-    return render(request, 'author.html', {
-        'author': author
-    })
 
 
 def favorites(request):
