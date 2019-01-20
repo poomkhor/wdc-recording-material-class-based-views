@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
-from django.views.generic import View
+from django.views.generic import View, TemplateView, RedirectView
 
 from .models import Author, Book
 from .forms import BookForm, SignUpForm
@@ -44,6 +44,7 @@ class BookDetailView(View):
         book = get_object_or_404(Book, id=book_id)
         return render(request, 'book.html', {'book': book})
 
+
 class AuthorListView(View):
     def get(self, request):
         authors = Author.objects.all()
@@ -51,12 +52,18 @@ class AuthorListView(View):
             'authors': authors
         })
 
+
 class AuthorDetailView(View):
     def get(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         return render(request, 'author.html', {
             'author': author
         })
+
+class AuthorByName(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        author = get_object_or_404(Author, name=kwargs['author_name'])
+        return reverse('author_detail', args=[author.id])
 
 
 # @login_required
