@@ -78,7 +78,7 @@
   </table>
   <p class="lead"><a href="{% url 'authors' %}">Prefer to browse by author?</a></p>
 
-  {% if request.user.is_authenticated and request.user.is_staff %}
+  {#% if request.user.is_authenticated and request.user.is_staff %#}
     <a href="/create_book/"><button type="button" class="btn btn-info">Create Book</button></a>
-  {% endif %}
+  {#% endif %#}
 {% endblock %}

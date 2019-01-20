@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.views.generic import View
+
 from .models import Author, Book
 from .forms import BookForm, SignUpForm
 
@@ -14,60 +16,62 @@ from .forms import BookForm, SignUpForm
 def is_staff(user):
     return user.is_staff
 
+class IndexView(View):
+    def get(self, request):
+        sort_method = request.GET.get('sort', 'asc')
+        books = Book.objects.all()
+        if sort_method == 'asc':
+            books = books.order_by('popularity')
+        elif sort_method == 'desc':
+            books = books.order_by('-popularity')
 
-def index(request):
-    sort_method = request.GET.get('sort', 'asc')
-    books = Book.objects.all()
-    if sort_method == 'asc':
-        books = books.order_by('popularity')
-    elif sort_method == 'desc':
-        books = books.order_by('-popularity')
+        if 'q' in request.GET:
+            q = request.GET['q']
+            books = books.filter(title__icontains=q)
 
-    if 'q' in request.GET:
-        q = request.GET['q']
-        books = books.filter(title__icontains=q)
+        # initialize list of favorite books for current session
+        request.session.setdefault('favorite_books', [])
+        request.session.save()
 
-    # initialize list of favorite books for current session
-    request.session.setdefault('favorite_books', [])
-    request.session.save()
+        return render(request, 'books.html', {
+            'books': books,
+            'authors': Author.objects.all(),
+            'sort_method': sort_method,
+        })
 
-    return render(request, 'books.html', {
-        'books': books,
-        'authors': Author.objects.all(),
-        'sort_method': sort_method,
-    })
+class BookDetailView(View):
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        return render(request, 'book.html', {'book': book})
 
+class AuthorListView(View):
+    def get(self, request):
+        authors = Author.objects.all()
+        return render(request, 'authors.html', {
+            'authors': authors
+        })
 
-def book_detail(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    return render(request, 'book.html', {'book': book})
-
-
-def authors(request):
-    authors = Author.objects.all()
-    return render(request, 'authors.html', {
-        'authors': authors
-    })
-
-
-def author_detail(request, author_id):
-    author = get_object_or_404(Author, id=author_id)
-    return render(request, 'author.html', {
-        'author': author
-    })
+class AuthorDetailView(View):
+    def get(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
+        return render(request, 'author.html', {
+            'author': author
+        })
 
 
-@login_required
-@user_passes_test(is_staff)
-def create_book(request):
-    if request.method == 'GET':
+# @login_required
+# @user_passes_test(is_staff)
+class CreateBookView(View):
+
+    def get(self, request):
         book_form = BookForm()
         return render(
             request,
             'create_book.html',
             context={'book_form': book_form}
         )
-    elif request.method == 'POST':
+
+    def post(self, request):
         book_form = BookForm(request.POST)
         if book_form.is_valid():
             book_form.save()
