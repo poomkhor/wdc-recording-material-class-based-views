@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <p class="h3">Confirm Book delete</p>
+  <div class="lead">
+    <p>The following objects as well as their related objects will be deleted. Are you sure?</p>
+    <p>{{object.title}}</p>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Confirm deletion" name="confirm_delete" />
+        <input type="submit" class="btn btn-primary" value="Cancel" name="cancel"/>
+    </form>
+  </div>
+{% endblock %}

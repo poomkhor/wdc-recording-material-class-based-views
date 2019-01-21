@@ -11,6 +11,8 @@ from django.views.generic import View, TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
+
 from .models import Author, Book
 from .forms import BookForm, SignUpForm
 
@@ -44,12 +46,6 @@ class IndexView(TemplateView):
             'sort_method': sort_method,
         }
 
-class BookDetailView(TemplateView):
-    template_name = "book.html"
-    def get_context_data(self, **kwargs):
-        book = get_object_or_404(Book, id=kwargs['book_id'])
-        return {'book': book}
-
 
 class AuthorListView(ListView):
     model = Author
@@ -64,28 +60,54 @@ class AuthorDetailView(DetailView):
     #     context['now'] = timezone.now()
     #     return context
 
+
+class BookDetailView(DetailView):
+    model = Book
+
 # @login_required
 # @user_passes_test(is_staff)
-class CreateBookView(View):
+# Step 1: Basic FormView
+class CreateBookView(FormView):
 
-    def get(self, request):
-        book_form = BookForm()
-        return render(
-            request,
-            'create_book.html',
-            context={'book_form': book_form}
-        )
+    template_name = 'create_book.html'
+    form_class = BookForm
+    success_url = '/'
 
-    def post(self, request):
-        book_form = BookForm(request.POST)
-        if book_form.is_valid():
-            book_form.save()
-            return redirect('index')
-        return render(
-            request,
-            'create_book.html',
-            context={'book_form': book_form}
-        )
+    # Old Post method
+    # def post(self, request):
+    #     book_form = BookForm(request.POST)
+    #     if book_form.is_valid():
+    #         book_form.save()
+    #         return redirect('index')
+    #     return render(
+    #         request,
+    #         'create_book.html',
+    #         context={'book_form': book_form}
+    #     )
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+# Step 2: CreateView
+# class CreateBookView(CreateView):
+#     template_name = 'create_book.html'
+#     success_url = '/'
+#
+#     model = Book
+#     fields = ['title', 'author', 'isbn', 'popularity']
+
+class BookUpdateView(UpdateView):
+    template_name = 'create_book.html'
+    success_url = '/'
+
+    model = Book
+    fields = ['title', 'author', 'isbn', 'popularity']
+
+
+class BookDeleteView(DeleteView):
+    model = Book
+    success_url = '/'
 
 
 @login_required

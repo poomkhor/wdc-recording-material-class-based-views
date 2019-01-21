@@ -10,9 +10,15 @@ urlpatterns = [
     path('authors/', views.AuthorListView.as_view(), name='authors'),
     path('author/<int:pk>/', views.AuthorDetailView.as_view(), name='author_detail'),
 
-    path('book/<int:book_id>/', views.BookDetailView.as_view(), name='book_detail'),
-    path('create_book/', views.CreateBookView.as_view(), name='create_book'),
-    path('delete_book', views.delete_book, name='delete_book'),
+    path('book/', views.CreateBookView.as_view(), name='book_create'),
+    path('book/<int:pk>/', views.BookDetailView.as_view(), name='book_detail'),
+    path('book/<int:pk>/update', views.BookUpdateView.as_view(), name='book_update'),
+    path('book/<int:pk>/delete', views.BookDeleteView.as_view(), name='book_delete'),
+    # path('delete_book', views.delete_book, name='delete_book'),
+
+
+
+
     path('edit_book/<int:book_id>/', views.edit_book, name='edit_book'),
     path('favorites/', views.favorites, name='favorites'),
     path('add-to-favorites/', views.add_to_favorites, name='add_to_favorites'),

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <p class="h3">Book detail</p>
+  <div class="lead">
+    <p>You're browsing <i><strong>{{ object.title}}</strong> by <a href="{% url 'author_detail' object.author.id %}">{{ object.author.name}}</a>.</i> (<i class="fa fa-star"></i> {{ object.popularity }})</p>
+    <p>Other books by the same author includes:</p>
+    <ul>
+      {% for book in object.author.book_set.all %}
+        <li>{{ book.title }} ({{ book.popularity }})</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <h5>Actions:</h5>
+  <ul>
+    <li><a href="{% url "book_create" %}"><i class="fa fa-plus"></i> Create</a></li>
+    <li><a href="{% url "book_update" pk=object.id %}"><i class="fa fa-edit"></i> Update</a></li>
+    <li><a href="{% url "book_delete" pk=object.id %}"><i class="fa fa-trash-alt"></i> Delete</a></li>
+  </ul>
+{% endblock %}

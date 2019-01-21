@@ -38,7 +38,7 @@
       {% for book in books %}
         <tr>
           <td class="align-middle">{{ book.id }}</td>
-          <td class="align-middle"><a href="{% url 'book_detail' book.author.id %}">{{ book.title}}</a></td>
+          <td class="align-middle"><a href="{% url 'book_detail' book.id %}">{{ book.title}}</a></td>
           <td class="align-middle"><a href="{% url 'author_detail' book.author.id %}">{{ book.author.name}}</a></td>
           <td class="align-middle">{{ book.popularity}}</td>
           {% if request.user.is_authenticated %}
