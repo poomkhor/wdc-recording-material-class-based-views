@@ -62,12 +62,8 @@
           {% if request.user.is_authenticated and request.user.is_staff %}
             <td class="align-middle">
               <div class="row justify-content-md-center">
-                <a href="/edit_book/{{book.id}}" style="margin-right: 5px;"><button type="button" class="btn btn-outline-warning btn-xs">Edit</button></a>
-                <form class="" action="/delete_book" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name='book_id' value='{{book.id}}'>
-                  <input type="submit" value='Delete' class="btn btn-outline-danger btn-xs">
-                </form>
+                <a class="btn btn-secondary btn-outline-warning btn-xs mr-2" href="{% url "book_update" book.id %}" role="button">Edit</a>
+                <a class="btn btn-secondary btn-outline-danger btn-xs" href="{% url "book_delete" book.id %}" role="button">Delete</a>
               </div>
             </td>
           {% endif %}
