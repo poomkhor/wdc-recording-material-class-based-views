@@ -11,6 +11,8 @@ from django.views.generic import View, TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 
 from .models import Author, Book
@@ -64,38 +66,17 @@ class AuthorDetailView(DetailView):
 class BookDetailView(DetailView):
     model = Book
 
-# @login_required
-# @user_passes_test(is_staff)
-# Step 1: Basic FormView
-class CreateBookView(FormView):
 
+class CreateBookView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'create_book.html'
-    form_class = BookForm
     success_url = '/'
 
-    # Old Post method
-    # def post(self, request):
-    #     book_form = BookForm(request.POST)
-    #     if book_form.is_valid():
-    #         book_form.save()
-    #         return redirect('index')
-    #     return render(
-    #         request,
-    #         'create_book.html',
-    #         context={'book_form': book_form}
-    #     )
+    model = Book
+    fields = ['title', 'author', 'isbn', 'popularity']
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    def test_func(self):
+        return is_staff(self.request.user)
 
-# Step 2: CreateView
-# class CreateBookView(CreateView):
-#     template_name = 'create_book.html'
-#     success_url = '/'
-#
-#     model = Book
-#     fields = ['title', 'author', 'isbn', 'popularity']
 
 class BookUpdateView(UpdateView):
     template_name = 'create_book.html'
@@ -104,8 +85,9 @@ class BookUpdateView(UpdateView):
     model = Book
     fields = ['title', 'author', 'isbn', 'popularity']
 
+from braces import views as braces_mixins
 
-class BookDeleteView(DeleteView):
+class BookDeleteView(braces_mixins.SuperuserRequiredMixin, DeleteView):
     model = Book
     success_url = '/'
 
