@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.views.generic import View, TemplateView, RedirectView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
 from .models import Author, Book
 from .forms import BookForm, SignUpForm
@@ -49,29 +51,18 @@ class BookDetailView(TemplateView):
         return {'book': book}
 
 
-class AuthorListView(TemplateView):
-    template_name = "authors.html"
-    def get_context_data(self, **kwargs):
-        authors = Author.objects.all()
-        return {
-            'authors': authors
-        }
+class AuthorListView(ListView):
+    model = Author
+    # paginate_by = 3
 
 
-class AuthorDetailView(TemplateView):
-    template_name = "author.html"
-    def get_context_data(self, **kwargs):
-        author = get_object_or_404(Author, id=kwargs['author_id'])
-        return {
-            'author': author
-        }
+class AuthorDetailView(DetailView):
+    model = Author
 
-
-class AuthorByName(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        author = get_object_or_404(Author, name=kwargs['author_name'])
-        return reverse('author_detail', args=[author.id])
-
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['now'] = timezone.now()
+    #     return context
 
 # @login_required
 # @user_passes_test(is_staff)

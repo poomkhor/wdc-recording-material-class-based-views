@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <p class="h1">Welcome to our Library!</p>
+  <p class="lead">These are our selected authors:</p>
+  <table class="table table-bordered table-hover text-center lead">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Author Name</th>
+        <th>Country</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for author in object_list %}
+        <tr>
+          <td>{{ author.id }}</td>
+          <td><a href="{% url 'author_detail' author.id %}">{{ author.name}}</a></td>
+          <td>{{ author.country.name}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+
+  {# Pagination #}
+  {% if is_paginated %}
+    <hr>
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+          {% if page_obj.has_previous %}
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+           {% else %}
+             <a class="page-link" href="#" tabindex="-1">Previous</a>
+           {% endif %}
+        </li>
+        {% for page_num in paginator.page_range %}
+          {% if page_obj.number == page_num %}
+            <li class="page-item active"><a class="page-link" href="#">{{ page_num }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+          {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+          {% if page_obj.has_next %}
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+           {% else %}
+             <a class="page-link" href="#">Next</a>
+           {% endif %}
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
+  <a href="/"><button type="button" class="btn btn-outline-primary">← Back</button></a>
+{% endblock %}
